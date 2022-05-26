@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block chatbox %}
+  <div id="chat-box" style="height: 80vh;"></div>
+  <div class="message-input">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <input type="text" name="message">
+      <button><a href="{% url 'textmessages:post' %}">Post</a></button>
+    </form>
+  <button><a href="{% url 'textmessages:home' %}">Close</a></button>
+  </div>
+{% endblock %}

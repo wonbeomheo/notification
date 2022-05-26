@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | Lobby</title>
+</head>
+<body>
+  <div>
+    <h5>Welcome! {{ message }}</h5>
+  </div>
+  <hr>
+  <div>
+    {% if not user.is_authenticated %}
+      <button><a href="{% url 'textmessages:signup' %}">Sign Up</a></button>
+      <button><a href="{% url 'textmessages:signin' %}">Sign In</a></button>
+      {% block signup-form %}{% endblock %}
+      {% block signin-form %}{% endblock %}
+    {% else %}
+      <button><a href="{% url 'textmessages:signout' %}">Sign Out</a></button>
+      <button><a href="{% url 'textmessages:showbox' %}">Notification</a></button>
+      {% block chatbox %}{% endblock %}
+    {% endif %}
+  </div>
+  <script>
+    if(typeof(EventSource) !== "undefined") {
+      const source = new EventSource("/notify/");
+      source.onmessage = function (event) {
+        console.log(event)
+        const newElement = document.createElement('li');
+        const eventList = document.getElementById('chat-box')
+
+        newElement.textContent = 'message: ' + event.data;
+        eventList.appendChild(newElement)
+      }
+    }
+  </script>
+</body>
+</html>
