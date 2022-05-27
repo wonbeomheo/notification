@@ -1,0 +1,114 @@
+{% extends 'textmessages/base.html' %}
+
+{% load static %}
+
+{% block chatbox %}
+  <div id="chat-box" style="height: 80vh;"></div>
+  <div class="message-input">
+    {% csrf_token %}
+    <label for="new-message"></label>
+    <input id="msg-box" type="text" name="new-message">
+    <button id="post-button" type="submit" value="Submit">Send</button>
+  <button><a href="{% url 'textmessages:home' %}">Close</a></button>
+  </div>
+{% endblock %}
+
+{% block new-chatbox %}
+  <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body px-0 pb-0">
+            <ul class="conversation-list px-3" data-simplebar="init" style="max-height: 538px;">
+              <div class="simplebar-wrapper" style="margin: 0px -24px;">
+                <div class="simplebar-height-auto-observer-wrapper">
+                  <div class="simplebar-height-auto-observer"></div>
+                </div>
+                <div class="simplebar-mask">
+                  <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                    <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden scroll;">
+                      <div id="chat-box" class="simplebar-content" style="padding: 0px 24px;">
+                        <li class="clearfix">
+                          <div class="conversation-text">
+                            <div class="ctext-wrap">
+                              <i>Shreyu N</i>
+                              <p>Hello!</p>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="clearfix odd">
+                            <div class="conversation-text">
+                                <div class="ctext-wrap">
+                                    <i>Dominic</i>
+                                    <p>
+                                        Hi, How are you? What about our next meeting?
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="simplebar-placeholder" style="width: auto; height: 872px;"></div>
+              </div>
+              <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+              </div>
+              <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                <div class="simplebar-scrollbar" style="height: 331px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+              </div>
+            </ul>
+          <div class="row px-3 pb-3">
+            <div class="col">
+              <div class="mt-2 bg-light p-3 rounded">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col mb-2 mb-sm-0">
+                    <input id="msg-box" type="text" class="form-control border-0" placeholder="Enter your text" required="">
+                    <div class="invalid-feedback">
+                      Please enter your messsage
+                    </div>
+                  </div>
+                  <div class="col-sm-auto">
+                    <div class="btn-group">
+                      <div class="d-grid">
+                        <button id="post-button" type="submit" class="btn btn-success chat-send"><i class="uil uil-message"></i></button>
+                      </div>
+                    </div>
+                  </div> <!-- end col -->
+                </div> <!-- end row-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block notification-script %}
+  <script type="text/javascript">
+    let csrf_token = $('[name=csrfmiddlewaretoken]').val();
+
+    let btnPost = document.querySelector('#post-button');
+
+    btnPost.addEventListener('click', e => {
+      let message = document.querySelector('#msg-box').value;
+      document.querySelector('#msg-box').value = '';
+      let param = {
+        'message': message
+      };
+      $.ajax({
+        headers: {
+          'X-CSRFToken': csrf_token
+        },
+        url: '{% url 'textmessages:post' %}',
+        type: 'POST',
+        data: JSON.stringify(param),
+        error: function() {
+          alert('Error occurred.')
+        }
+      });
+    });
+  </script>
+{% endblock %}

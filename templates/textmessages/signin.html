@@ -1,14 +1,30 @@
-{% extends 'base.html' %}
+{% extends 'textmessages/base.html' %}
 
 {% block signin-form %}
 <div class="signin">
   <form action="" method="POST">
     {% csrf_token %}
-    <label for="username">Username: </label>
-    <input type="text" name="username">
-    <label for="password">Password: </label>
-    <input type="password" name="password">
-    <button type="submit" value="Submit">Sign In</button>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <label for="username">Username: </label>
+              <input type="text" name="username">
+            </div>
+            <div class="mb-3">
+              <label for="password">Password: </label>
+              <input type="password" name="password">
+            </div>
+            <button type="submit" value="Submit" class="btn btn-primary btn-sm mt-1">Sign In</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
 </div>
+{% endblock %}
+
+{% block new-signin-form %}
+
 {% endblock %}

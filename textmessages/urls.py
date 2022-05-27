@@ -10,7 +10,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
     path('signout/', views.signout, name='signout'),
-    path('notify/', views.notify, name='notify'),
-    path('notification/', views.showbox, name='showbox'),
+    path('stream/', views.stream, name='stream'),
+    path('chat/', views.showbox, name='showbox'),
     path('post/', views.post, name='post')
 ]

@@ -2,16 +2,19 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import User, Message
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, JsonResponse
 
 import time
+import json
 
 
 def home(request):
-    return render(request, 'base.html')
+    context = {'title': 'Lobby'}
+    return render(request, 'textmessages/base.html', context)
 
 
 def signup(request):
+    context = {'title': 'Sign Up'}
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -26,10 +29,11 @@ def signup(request):
 
         return redirect('textmessages:signin')
     else:
-        return render(request, 'textmessages/signup.html')
+        return render(request, 'textmessages/signup.html', context)
 
 
 def signin(request):
+    context = {'title': 'Sign In'}
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -38,13 +42,13 @@ def signin(request):
 
         if user is not None:
             login(request, user=user)
-            context = {'message': user.username + ' You logged in successfully.'}
+            context = {'message': 'You logged in successfully.'}
             return render(request, 'textmessages/signin.html', context)
         else:
             messages.error(request, 'ID or Password was incorrect.')
             return redirect('textmessages:signin')
     else:
-        return render(request, 'textmessages/signin.html')
+        return render(request, 'textmessages/signin.html', context)
 
 
 def signout(request):
@@ -53,27 +57,32 @@ def signout(request):
     return redirect('textmessages:home')
 
 
-def notify(request):
+def stream(request):
     # keep sending messages
     # need to filter them
     def event_stream():
         while True:
-            time.sleep(1)
             message = Message.objects.filter(is_sent=False).first()
-
-            text = ''
+            time.sleep(0.1)
 
             if message:
                 text = message.message
                 message.is_sent = True
                 message.save()
-            yield 'data: %s\n\n' % text
+                yield 'data: %s %s\n\n' % (message.user, text)
     return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
 
 
 def showbox(request):
-    return render(request, 'textmessages/notification.html')
+    return render(request, 'textmessages/chat.html')
 
 
 def post(request):
-    pass
+    print(request.user)
+    print('In Post')
+    json_object = json.loads(request.body)
+    message = json_object.get('message')
+    user = request.user
+
+    Message.objects.create(user=user, message=message)
+    return JsonResponse(json_object)

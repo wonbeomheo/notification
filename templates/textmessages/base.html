@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" class="menuitem-active">
+<head>
+  <meta charset="UTF-8">
+  <title>SSE Practice | {{ title }}</title>
+  {% load static %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- bundle CSS -->
+  <link rel="stylesheet" type="text/css" href="{% static 'textmessages/css/app.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'textmessages/css/icons.min.css' %}">
+
+  <!-- Third Party CSS -->
+  <link rel="stylesheet" type="text/css" href="{% static 'textmessages/css/vendor/jquery-jvectormap-1.2.2.css' %}">
+</head>
+<body>
+  <div>
+    <h5>Welcome! {% if request.user %}{{ request.user.username }} {{ message }}{% endif %}</h5>
+  </div>
+  <hr>
+  <div>
+    {% if not user.is_authenticated %}
+      <a href="{% url 'textmessages:signup' %}"><button class="btn btn-primary btn-sm mt-1">Sign Up</button></a>
+      <a href="{% url 'textmessages:signin' %}"><button class="btn btn-primary btn-sm mt-1">Sign In</button></a>
+      {% block signup-form %}{% endblock %}
+      {% block signin-form %}{% endblock %}
+    {% else %}
+      <a href="{% url 'textmessages:signout' %}"><button class="btn btn-primary btn-sm mt-1">Sign Out</button></a>
+      <a href="{% url 'textmessages:showbox' %}"><button class="btn btn-primary btn-sm mt-1">Chat</button></a>
+      {% block new-chatbox %}{% endblock %}
+    {% endif %}
+  </div>
+  <script>
+    if(typeof(EventSource) !== "undefined") {
+      const source = new EventSource("/stream/");
+      source.onmessage = function (event) {
+        console.log(event)
+        const newElement = document.createElement('li');
+        const eventList = document.getElementById('chat-box')
+
+        newElement.textContent = 'message: ' + event.data;
+        eventList.appendChild(newElement)
+      }
+    }
+  </script>
+  {% block notification-script %}{% endblock %}
+</body>
+</html>
